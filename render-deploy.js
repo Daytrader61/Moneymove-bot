@@ -144,12 +144,34 @@ bot.action('admin_pending', async (ctx) => {
   if (!isAdmin(ctx.from.id)) return;
   fresh();
   const pending = leads.filter(l => l.status === 'completed' && !l.verified);
-  const open = leads.filter(l => l.status && l.status !== 'completed');
-  let msg = '';
-  if (pending.length) { msg += `⏳ *WARTEND (${pending.length})*\n\n`; pending.slice(0,15).forEach((l,i) => { msg += `${i+1}. ${l.name}${l.uid ? ' ('+l.uid+')' : ''}\n\n`; }); }
-  if (open.length) { msg += `\n📝 *OFFEN (${open.length})*\n\n`; open.slice(0,15).forEach((l,i) => { msg += `${i+1}. ${l.name} - ${l.status}\n\n`; }); }
-  if (!msg) msg = '🎉 Alles erledigt!';
-  await ctx.editMessageText(msg, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🔙', 'admin_dash')]]) });
+  const offen = leads.filter(l => l.status && l.status !== 'completed');
+  
+  const messages = [
+    'Hey! Hast du Probleme bei der Registrierung? Brauchst du Hilfe?',
+    'Hab ich dich nicht ganz ueberzeugt? Was kann ich dir noch zeigen?',
+    'Kleiner Reminder: Dein Zugang wartet auf dich! Noch Fragen?',
+    'Hey, mochtest du weitermachen wo wir aufgehoert haben?',
+    'Kein Druck! Aber falls du Hilfe brauchst, ich bin da.',
+    'Hast du fragen zum Indikator oder zu VT Markets?',
+    'Dein Platz in der Gruppe ist reserviert. Fehlt nur noch ein Schritt!',
+    'Soll ich dir nochmal zeigen was dich erwartet?'
+  ];
+  
+  let gesendet = 0;
+  for (const l of offen) {
+    try {
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      await bot.telegram.sendMessage(l.id, msg);
+      gesendet++;
+      await new Promise(r => setTimeout(r, 1000));
+    } catch(e) {}
+  }
+  
+  let antwort = `📬 *NACHRICHTEN GESENDET*\n\n`;
+  antwort += `${gesendet} von ${offen.length} offenen Leads benachrichtigt.\n\n`;
+  if (pending.length) antwort += `${pending.length} warten auf Verifizierung (sind fertig).`;
+  
+  await ctx.editMessageText(antwort, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🔙 Dashboard', 'admin_dash')]]) });
 });
 
 bot.action('admin_export', async (ctx) => {
