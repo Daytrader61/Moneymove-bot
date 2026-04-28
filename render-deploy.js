@@ -259,9 +259,7 @@ bot.action('step3', async (ctx) => {
 VT Markets muss wissen dass du echt bist. Deshalb:
 
 1️⃣ Lade deinen Ausweis hoch (Verifizierung)
-2️⃣ Zahl deine erste Einzahlung ein (100-500€)
-
-Ich empfehle dir 250€. Nicht weil du mehr riskieren sollst, sondern weil du ab 200€ bessere Konditionen bekommst.
+2️⃣ Zahl 100$ ein (mehr geht immer, aber 100$ reichen zum Start)
 
 Sobald das Geld auf deinem Konto ist, schalte ich dich frei:
 ✅ Gold Structure v1.1 Indikator
