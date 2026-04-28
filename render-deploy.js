@@ -176,41 +176,117 @@ bot.start(async (ctx) => {
     save();
     adminNotify(`🆕 Lead: ${user.first_name}`);
   }
-  await ctx.reply(`Hey ${user.first_name}! 👋\n\nWillkommen bei *MoneyMove*! 🚀\n\n*Das bekommst du KOSTENLOS:*\n\n📊 *Gold Structure v1.1* Indikator (FREE)\n📡 *Taegliche XAUUSD Signale* (FREE)\n🎥 *Livestreams* + Community (FREE)\n\nIn 5 Schritten bist du drin!\n\nBereit?`,
-    { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🚀 JA!', 'step1')],[Markup.button.callback('❓ Was ist MoneyMove?', 'about')]]) }
+  await ctx.reply(`Hey ${user.first_name}! 👋
+
+Stell dir vor, du oeffnest den Chart und siehst sofort wo der Kurs als naechstes hingeht.
+
+Kein Raten. Kein Bauchgefuehl. Nur klare Zonen.
+
+Hier bei MoneyMove bekommst du genau das - und zwar komplett kostenlos.
+
+Soll ich dir zeigen wie?`,
+    { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🚀 Zeig mir!', 'step1')],[Markup.button.callback('❓ Erstmal verstehen', 'about')]]) }
   );
 });
 
 bot.action('about', async (ctx) => {
   await ctx.answerCbQuery();
-  await ctx.reply(`*MoneyMove* - Deutschlands wachsende Trading-Community 📈\n\n💎 *Gold Structure v1.1* Indikator (FREE)\n💎 *Taegliche XAUUSD Signale* (FREE)\n💎 *Livestreams* mit Live-Trading (FREE)\n💎 *Community* mit 500+ Tradern (FREE)\n\nAlles kostenlos. Keine versteckten Kosten.\n\nIn 5 Schritten dabei! 🚀`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🚀 Starten!', 'step1')]]) });
+  await ctx.reply(`Weisst du warum 90% der Trader Geld verlieren?
+
+Nicht weil sie schlecht sind. Sondern weil ihnen die richtigen Werkzeuge fehlen.
+
+MoneyMove gibt dir genau das:
+
+🚀 Einen Indikator, der dir zeigt WO die Institutionen einsteigen
+🎯 Signale mit klaren Zielen - kein Interpretationsspielraum
+👥 Eine Community die den gleichen Weg geht
+
+Das alles kostenlos. Klingt gut?
+
+Dann lass uns loslegen!`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🚀 Ja, los!', 'step1')]]) });
 });
 
 bot.action('step1', async (ctx) => {
   await ctx.answerCbQuery();
   users[uid(ctx)].step = 1; updateLead(uid(ctx), 'step1'); save();
-  await ctx.reply(`*SCHRITT 1/5: Deine Vorteile* 🎁\n\n*KOSTENLOS fuer dich:*\n\n📊 *Gold Structure v1.1* Indikator\n   Markiert Order Blocks, Liquidity & Struktur.\n   Sonst kostenpflichtig - bei uns FREE!\n\n📡 *Taegliche XAUUSD Signale*\n   Entry, SL, TP - fertig zum Traden.\n\n🎥 *Livestreams*\n   Schau mir live beim Traden zu.\n\n👥 *Community* mit 500+ Tradern\n\nDas einzige was du brauchst: Ein kostenloses VT Markets Konto (5 Minuten).`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('✅ Weiter', 'step2')]]) });
+  await ctx.reply(`Ich zeig dir kurz was dich erwartet.
+
+Die meisten Trader haben 10 Indikatoren offen und wissen trotzdem nicht wann sie kaufen sollen.
+
+Wir machen es anders:
+
+📊 EIN Indikator - Gold Structure v1.1 - der dir genau zeigt:
+• Wo die Institutionen ihre Aufträge platzieren
+• Wo die Liquidität liegt (da geht der Kurs hin)
+• Wo dein Stop-Loss sein MUSS
+
+📡 Taeglich bekommst du fertige Signale:
+• Einstiegskurs
+• Stop-Loss
+• 2 Take-Profit Ziele
+
+🎥 Und das beste: Du siehst uns live im Trade.
+Jeden Fehler. Jeden Gewinn. Nichts wird versteckt.
+
+Alles kostenlos. Wir wollen nur eins: Dass du lernst.
+
+Klingt fair?`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('✅ Absolut fair!', 'step2')]]) });
 });
 
 bot.action('step2', async (ctx) => {
   await ctx.answerCbQuery();
   users[uid(ctx)].step = 2; updateLead(uid(ctx), 'registration'); save();
-  await ctx.reply(`*SCHRITT 2/5: Konto erstellen* 📝\n\n1️⃣ Link oeffnen\n2️⃣ Code *${VT_CODE}* eingeben\n3️⃣ E-Mail bestaetigen\n\nDanach freigeschaltet:\n✅ Gold Structure v1.1 Indikator (FREE)\n✅ Taegliche Signale (FREE)\n✅ Livestreams (FREE)\n\n${VT_LINK}`,
-    { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.url('🔗 REGISTRIEREN', VT_LINK)],[Markup.button.callback('✅ Registriert!', 'step3')]]) });
+  await ctx.reply(`Fast geschafft! Nur noch ein Schritt bevor ich dich freischalte.
+
+Wir arbeiten mit VT Markets zusammen - einem der top regulierten Broker.
+
+Wichtig: Du musst DIESEN Link nutzen und unten den Code eingeben, sonst landest du nicht in unserem System:
+
+Code: *${VT_CODE}*
+
+${VT_LINK}
+
+Nach der Registrierung gehts direkt weiter zu Schritt 3!`,
+    { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.url('🔗 JETZT REGISTRIEREN', VT_LINK)],[Markup.button.callback('✅ Bin registriert!', 'step3')]]) });
 });
 
 bot.action('step3', async (ctx) => {
   await ctx.answerCbQuery();
   users[uid(ctx)].step = 3; updateLead(uid(ctx), 'deposit'); save();
   adminNotify(`✅ Registriert: ${users[uid(ctx)].name}`);
-  await ctx.reply(`*SCHRITT 3/5: Freischaltung* ✅\n\n1️⃣ ID hochladen bei VT Markets\n2️⃣ Erste Einzahlung (100-500€ empfohlen)\n\nSobald das Geld da ist, schalte ich dich frei fuer:\n📊 Gold Structure v1.1 (FREE)\n📡 Exklusive Signal-Gruppe (FREE)\n🎥 Livestream-Zugang (FREE)\n\n👇 Klick wenn eingezahlt`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('✅ Eingezahlt!', 'step4')]]) });
+  await ctx.reply(`Jetzt kommt der wichtigste Schritt.
+
+VT Markets muss wissen dass du echt bist. Deshalb:
+
+1️⃣ Lade deinen Ausweis hoch (Verifizierung)
+2️⃣ Zahl deine erste Einzahlung ein (100-500€)
+
+Ich empfehle dir 250€. Nicht weil du mehr riskieren sollst, sondern weil du ab 200€ bessere Konditionen bekommst.
+
+Sobald das Geld auf deinem Konto ist, schalte ich dich frei:
+✅ Gold Structure v1.1 Indikator
+✅ Signal-Gruppe
+✅ Livestreams
+✅ Community
+
+Melde dich einfach wenns erledigt ist!`, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('✅ Geld ist drauf!', 'step4')]]) });
 });
 
 bot.action('step4', async (ctx) => {
   await ctx.answerCbQuery();
   users[uid(ctx)].step = 4; updateLead(uid(ctx), 'waiting_uid'); save();
   adminNotify(`💰 Eingezahlt: ${users[uid(ctx)].name}`);
-  await ctx.reply(`*SCHRITT 4/5: Fast geschafft!* 🆔\n\nSchick mir deine VT Markets Account-ID (UID).\n\n👉 App → Profil → Einstellungen\n\nDanach schalte ich dich frei:\n\n📊 Gold Structure v1.1 (FREE)\n📡 Taegliche Signale (FREE)\n🎥 Livestreams (FREE)\n👥 Community (FREE)\n\n👇 Nur Zahlen:`, { parse_mode:'Markdown' });
+  await ctx.reply(`Du bist fast drin! 🎉
+
+Jetzt brauche ich noch deine VT Markets Account-ID (UID).
+
+👉 Oeffne die VT Markets App
+👉 Gehe zu Profil -> Einstellungen
+👉 Dort siehst du deine 8-stellige UID
+
+Schick sie mir einfach als Nachricht.
+
+Sobald ich sie habe, schalte ich dich komplett frei!`, { parse_mode:'Markdown' });
 });
 
 bot.on('text', async (ctx) => {
@@ -220,7 +296,20 @@ bot.on('text', async (ctx) => {
   users[userId].uid = text; users[userId].step = 5; users[userId].completed = true; users[userId].completedAt = new Date().toISOString();
   updateLead(userId, 'completed', { uid: text, completedAt: users[userId].completedAt }); save();
   adminNotify(`🎉 *Kunde:* ${users[userId].name} | UID: ${text}`);
-  await ctx.reply(`*WILLKOMMEN IM TEAM!* 🎉🚀\n\nUID *${text}* registriert.\n\n*DEINE KOSTENLOSEN VORTEILE:*\n\n📊 Gold Structure v1.1 Indikator\n📡 Taegliche Signale in der Gruppe\n🎥 Livestream-Zugang\n👥 Community mit 500+ Tradern\n\nWir schalten dich in 1-2 Stunden frei!\n\nWillkommen bei MoneyMove! 🔥`, { parse_mode:'Markdown' });
+  await ctx.reply(`🔥 DU BIST DRIN! 🎉🎉🎉
+
+UID *${text}* ist registriert und wird in Kuerze freigeschaltet.
+
+Hier nochmal was dich erwartet:
+
+📊 Gold Structure v1.1 - Dein persoenlicher Indikator
+📡 Taegliche Signale mit Entry, SL, TP
+🎥 Livestreams - schau uns live zu
+👥 Community mit gleichgesinnten Tradern
+
+Ich melde mich bei dir sobald alles freigeschaltet ist.
+
+Bis gleich und herzlich willkommen im Team! 🔥`, { parse_mode:'Markdown' });
 });
 
 function updateLead(userId, status, extra = {}) {
