@@ -188,6 +188,25 @@ bot.action('admin_export', async (ctx) => {
 });
 
 // =====================================================================
+// ADMIN NACHRICHT AN LEAD
+// =====================================================================
+bot.command('msg', async (ctx) => {
+  if (!isAdmin(ctx.from.id)) return;
+  const args = ctx.message.text.split(' ').slice(1);
+  if (args.length < 2) return ctx.reply('Nutze: /msg <telegram_id> <nachricht>');
+  
+  const targetId = args[0];
+  const msg = args.slice(1).join(' ');
+  
+  try {
+    await bot.telegram.sendMessage(targetId, `💬 *MoneyMove*\n\n${msg}`, { parse_mode: 'Markdown' });
+    await ctx.reply(`✅ Nachricht gesendet an ${targetId}`);
+  } catch(e) {
+    await ctx.reply(`❌ Konnte nicht senden. User hat Bot blockiert oder ID falsch: ${e.message}`);
+  }
+});
+
+// =====================================================================
 // USER ONBOARDING
 // =====================================================================
 bot.start(async (ctx) => {
@@ -196,7 +215,9 @@ bot.start(async (ctx) => {
     users[userId] = { id: userId, name: user.first_name, username: user.username || 'keiner', step: 0, joined: new Date().toISOString() };
     leads.push({ id: userId, name: user.first_name, username: user.username || 'keiner', status: 'started', joined: new Date().toISOString() });
     save();
-    adminNotify(`🆕 Lead: ${user.first_name}`);
+    adminNotify(`🆕 Neuer Lead: ${user.first_name} (@${user.username || 'keiner'})
+🆔 ID: ${userId}
+💬 Schreib ihm direkt: /msg ${userId} Hallo`);
   }
   await ctx.reply(`Hey ${user.first_name}! 👋
 
