@@ -332,7 +332,22 @@ Sobald ich sie habe, schalte ich dich komplett frei!`, { parse_mode:'Markdown' }
 
 bot.on('text', async (ctx) => {
   const text = ctx.message.text.trim(), userId = uid(ctx);
-  if (!users[userId] || users[userId].step !== 4) return;
+  
+  // Wenn ein Lead schreibt (aber nicht in Schritt 4), leite an Admin weiter
+  if (!users[userId] || users[userId].step !== 4) {
+    if (users[userId] && !isAdmin(userId)) {
+      for (const a of ADMIN_IDS) {
+        try {
+          await bot.telegram.sendMessage(a, 
+            `💬 *${users[userId].name}* (@${users[userId].username || 'keiner'}):\n${text.substring(0, 500)}\n\nAntworte mit: /msg ${userId} ...`,
+            { parse_mode: 'Markdown' }
+          );
+        } catch(e) {}
+      }
+    }
+    return;
+  }
+  
   if (!/^[0-9]{6,12}$/.test(text)) return ctx.reply('❌ Bitte 6-12 Zahlen.');
   users[userId].uid = text; users[userId].step = 5; users[userId].completed = true; users[userId].completedAt = new Date().toISOString();
   updateLead(userId, 'completed', { uid: text, completedAt: users[userId].completedAt }); save();
