@@ -83,16 +83,41 @@ bot.action('admin_dash', async (ctx) => {
 });
 
 bot.action('admin_list', async (ctx) => {
-  await ctx.answerCbQuery();
-  if (!isAdmin(ctx.from.id)) return;
+  if (!isAdmin(ctx.from.id)) { await ctx.answerCbQuery().catch(()=>{}); return; }
+  await ctx.answerCbQuery().catch(()=>{});
   fresh();
-  if (!leads.length) return ctx.editMessageText('❌ Keine Leads.', { ...Markup.inlineKeyboard([[Markup.button.callback('🔙', 'admin_dash')]]) });
+  if (!leads || !leads.length) return ctx.reply('❌ Keine Leads.');
+  
   let msg = `👥 *ALLE LEADS (${leads.length})*\n\n`;
-  [...leads].reverse().slice(0,20).forEach((l,i) => {
+  const sorted = [...leads].reverse();
+  
+  let parts = [];
+  let current = msg;
+  
+  sorted.forEach((l, i) => {
     const s = l.verified ? '✅' : l.status === 'completed' ? '⏳' : '📝';
-    msg += `${i+1}. ${s} ${l.name}${l.username ? ' @'+l.username : ''}${l.uid ? '\n   🆔 '+l.uid : ''}\n   📍 ${l.status} | ${new Date(l.joined).toLocaleDateString('de-DE')}\n\n`;
+    const name = l.name || 'Unbekannt';
+    const user = l.username ? ` @${l.username}` : '';
+    const uid = l.uid ? `\n   🆔 \`${l.uid}\`` : '';
+    const status = l.status || 'started';
+    let datum = '-';
+    try { if (l.joined) datum = new Date(l.joined).toLocaleDateString('de-DE'); } catch(e) {}
+    
+    const line = `${i+1}. ${s} ${name}${user}${uid}\n   📍 ${status} | ${datum}\n\n`;
+    
+    if ((current + line).length > 3800) {
+      parts.push(current);
+      current = `... (${i+1}/${sorted.length}):\n\n` + line;
+    } else {
+      current += line;
+    }
   });
-  await ctx.editMessageText(msg, { parse_mode:'Markdown', ...Markup.inlineKeyboard([[Markup.button.callback('🔙', 'admin_dash')]]) });
+  parts.push(current);
+  
+  await ctx.reply(parts[0]);
+  for (let p = 1; p < parts.length; p++) {
+    await ctx.reply(parts[p]);
+  }
 });
 
 bot.action('admin_verify', async (ctx) => {
@@ -178,13 +203,20 @@ bot.action('admin_export', async (ctx) => {
   await ctx.answerCbQuery();
   if (!isAdmin(ctx.from.id)) return;
   fresh();
-  const v = leads.filter(l => l.verified);
-  if (!v.length) return ctx.editMessageText('Keine verifizierten.');
-  let csv = 'Name,Username,VT_UID,Telegram_ID,Verified_At\n';
-  v.forEach(l => { csv += `"${l.name}","${l.username}","${l.uid || ''}","${l.id}","${l.verifiedAt || ''}"\n`; });
-  const file = path.join(DB_DIR, `export_${Date.now()}.csv`);
+  
+  if (!leads.length) return ctx.reply('❌ Keine Leads zu exportieren.');
+  
+  // ALLE Leads exportieren, nicht nur verifizierte
+  let csv = 'Name,Username,Telegram_ID,VT_UID,Status,Verifiziert,Registriert,Abgeschlossen
+';
+  leads.forEach(l => {
+    csv += `"${l.name || ''}","${l.username || ''}","${l.id || ''}","${l.uid || ''}","${l.status || 'started'}","${l.verified ? 'Ja' : 'Nein'}","${l.joined || ''}","${l.completedAt || ''}"
+`;
+  });
+  
+  const file = path.join(DB_DIR, `ALLE_LEADS_${Date.now()}.csv`);
   fs.writeFileSync(file, csv);
-  await ctx.replyWithDocument({ source: file }, { caption: `📁 ${v.length} Kunden` });
+  await ctx.replyWithDocument({ source: file }, { caption: `📁 ALLE ${leads.length} Leads exportiert` });
 });
 
 // =====================================================================
