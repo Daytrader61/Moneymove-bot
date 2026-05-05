@@ -1,0 +1,32 @@
+{
+  "7549484475": {
+    "id": 7549484475,
+    "username": "AmoFX61",
+    "name": ".",
+    "step": 5,
+    "joined": "2026-04-23T22:29:08.977Z",
+    "completed": true,
+    "uid": "1234566777",
+    "completedAt": "2026-04-28T10:07:54.057Z",
+    "verified": true,
+    "verifiedAt": "2026-04-24T18:22:51.854Z",
+    "verifiedBy": "AmoFX61"
+  },
+  "8136053507": {
+    "id": 8136053507,
+    "username": "V_Admin1",
+    "name": "Toni",
+    "step": 5,
+    "joined": "2026-04-23T22:23:44.988Z",
+    "completed": true,
+    "uid": "22205599",
+    "completedAt": "2026-04-24T18:27:35.238Z"
+  },
+  "7996660738": {
+    "id": "7996660738",
+    "name": "Hallo",
+    "username": "BVB1909Borussia",
+    "step": 0,
+    "joined": "2026-04-28T00:47:03.902Z"
+  }
+}
